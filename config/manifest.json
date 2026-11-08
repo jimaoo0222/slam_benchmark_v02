@@ -1,0 +1,100 @@
+{
+ "_comment": "new_benchmark 的评测清单：bag → 雷达 / 场地真值 / 各算法轨迹文件",
+ "_note": "轨迹全部为 TUM 8 列格式。glim 的 traj.txt 是 map 系（全局优化后），traj_odom.txt 是 odom 系（/glim_ros/lidar_odom_corrected）；01_1 的 odom 录制不完整（3675 帧 / 1071 s，实际 209 s），已剔除。C01 的 GLIM 全部来自 SKYLANDX 适配版 c01_glim_src_20261030_v2（见 slam_benchmark/results/2026-11-09_SENIOR_V2_C01/README.md）。",
+ "bags": {
+  "01_1": {
+   "radar": "MID-360s",
+   "site": "config/site_mid360_demo.json",
+   "site_path": "slam_benchmark/config/site_mid360_demo.json",
+   "traj": {
+    "GLIM(map)": "traj/01_1_glim/traj.txt",
+    "FAST-LIO2": "traj/01_1_fastlio/traj.txt",
+    "LIO-SAM": "traj/01_1_liosam/traj.txt",
+    "Point-LIO": "traj/01_1_pointlio/traj.txt"
+   }
+  },
+  "01_2": {
+   "radar": "MID-360s",
+   "site": "config/site_mid360_demo.json",
+   "site_path": "slam_benchmark/config/site_mid360_demo.json",
+   "traj": {
+    "GLIM(map)": "traj/01_2_glim/traj.txt",
+    "FAST-LIO2": "traj/01_2_fastlio/traj.txt",
+    "Point-LIO": "traj/01_2_pointlio/traj.txt",
+    "LIO-SAM": "traj/01_2_liosam/traj.txt"
+   }
+  },
+  "02_1": {
+   "radar": "MID-360s",
+   "site": "config/site_mid360_demo_path2.json",
+   "site_path": "slam_benchmark/config/site_mid360_demo_path2.json",
+   "traj": {
+    "GLIM(map)": "traj/02_1_glim/traj.txt",
+    "GLIM(odom)": "traj/02_1_glim/traj_odom.txt",
+    "FAST-LIO2": "traj/02_1_fastlio/traj.txt",
+    "LIO-SAM": "traj/02_1_liosam/traj.txt",
+    "Point-LIO": "traj/02_1_pointlio/traj.txt"
+   }
+  },
+  "02_2": {
+   "radar": "MID-360s",
+   "site": "config/site_mid360_demo_path2.json",
+   "site_path": "slam_benchmark/config/site_mid360_demo_path2.json",
+   "traj": {
+    "GLIM(map)": "traj/02_2_glim/traj.txt",
+    "GLIM(odom)": "traj/02_2_glim/traj_odom.txt",
+    "LIO-SAM": "traj/02_2_liosam/traj.txt",
+    "Point-LIO": "traj/02_2_pointlio/traj.txt",
+    "FAST-LIO2": "traj/02_2_fastlio/traj.txt"
+   }
+  },
+  "03_01": {
+   "radar": "C01",
+   "site": "config/site_c01_rect.json",
+   "site_path": "slam_benchmark/config/site_c01_rect.json",
+   "traj": {
+    "GLIM(map)": "traj/03_01_glim/traj.txt",
+    "GLIM(odom)": "traj/03_01_glim/traj_odom.txt",
+    "FAST-LIO2": "traj/03_01_fastlio/traj.txt",
+    "LIO-SAM": "traj/03_01_liosam/traj.txt",
+    "Point-LIO": "traj/03_01_pointlio/traj.txt"
+   }
+  },
+  "03_02": {
+   "radar": "C01",
+   "site": "config/site_c01_rect_rev_open.json",
+   "site_path": "slam_benchmark/config/site_c01_rect_rev_open.json",
+   "traj": {
+    "GLIM(map)": "traj/03_02_glim/traj.txt",
+    "GLIM(odom)": "traj/03_02_glim/traj_odom.txt",
+    "FAST-LIO2": "traj/03_02_fastlio/traj.txt",
+    "LIO-SAM": "traj/03_02_liosam/traj.txt",
+    "Point-LIO": "traj/03_02_pointlio/traj.txt"
+   }
+  },
+  "04_01": {
+   "radar": "C01",
+   "site": "config/site_mid360_demo_path2.json",
+   "site_path": "slam_benchmark/config/site_mid360_demo_path2.json",
+   "traj": {
+    "GLIM(map)": "traj/04_01_glim/traj.txt",
+    "GLIM(odom)": "traj/04_01_glim/traj_odom.txt",
+    "FAST-LIO2": "traj/04_01_fastlio/traj.txt",
+    "LIO-SAM": "traj/04_01_liosam/traj.txt",
+    "Point-LIO": "traj/04_01_pointlio/traj.txt"
+   }
+  },
+  "04_02": {
+   "radar": "C01",
+   "site": "config/site_mid360_path1_open.json",
+   "site_path": "slam_benchmark/config/site_mid360_path1_open.json",
+   "traj": {
+    "GLIM(map)": "traj/04_02_glim/traj.txt",
+    "GLIM(odom)": "traj/04_02_glim/traj_odom.txt",
+    "FAST-LIO2": "traj/04_02_fastlio/traj.txt",
+    "LIO-SAM": "traj/04_02_liosam/traj.txt",
+    "Point-LIO": "traj/04_02_pointlio/traj.txt"
+   }
+  }
+ }
+}
