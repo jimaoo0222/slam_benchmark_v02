@@ -312,6 +312,15 @@ def summarize(rows):
     return summ
 
 
+def build_site():
+    """把评测产物渲染成静态网站（site/index.html）。"""
+    script = HERE / 'scripts/make_site.py'
+    if not script.is_file():
+        return
+    r = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+    print(r.stdout.strip() or r.stderr[-300:])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--windows', action='store_true', help='只重建 IMU 停车窗口')
@@ -321,9 +330,11 @@ def main():
         build_windows()
     elif args.eval:
         summarize(run_eval())
+        build_site()
     else:
         build_windows()
         summarize(run_eval())
+        build_site()
     return 0
 
 

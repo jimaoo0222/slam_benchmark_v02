@@ -178,7 +178,7 @@ seg_bias = mean_k[ |p_{k+1} − p_k| / |P_{k+1} − P_k| − 1 ]      单位 %
 ※ Point-LIO 在序列 `03_02` 上发散，已剔除，中位数按 7 个有效序列计算。
 
 「有效序列」中 6 表示该指标对 2 条序列不适用（`03_02`、`04_02` 出发即在行走，
-无起点锚点，重访与闭合均无定义）；GLIM (odom) 另缺 `01_1`、`01_2` 的录制。
+无起点锚点，重访与闭合均无定义）；GLIM (odom) 另缺 `01_1`、`01_2`。
 
 ### 4.2 逐序列结果
 
@@ -337,15 +337,12 @@ C01 在 `03_01` 上的静止散布为 10.5 mm，而 MID-360s 在 `02_1` 上为 1
 | 项 | 设置 |
 |---|---|
 | 轨迹格式 | TUM 八列（timestamp, x, y, z, qx, qy, qz, qw） |
-| GLIM (map) | 离线跑 `glim_rosbag`，取内部导出的 `traj_lidar.txt`（全局优化后） |
-| GLIM (odom) | 在线跑 `glim_rosnode` + 回放 bag，用 `traj_recorder.py` 订阅 `/glim_ros/lidar_odom_corrected` |
-| 其余系统 | `traj_recorder.py` 订阅各自里程计话题 |
+| GLIM (map) | `traj_lidar.txt`（map 系，全局优化后） |
+| GLIM (odom) | `/glim_ros/lidar_odom_corrected`（odom 系，无全局跳变） |
+| 其余系统 | 各自里程计话题 |
 | ROS 域 | 独立 `ROS_DOMAIN_ID`，避免同机其他节点的 DDS 流量干扰 |
-| GLIM 回放倍率 | 不适用：map 系离线读 bag，odom 系 1.0×（时间戳来自消息本身，倍速不改变结果） |
-| 其余系统回放倍率 | FAST-LIO2 1.0×，LIO-SAM 0.7×，Point-LIO 0.35×（按各系统算力上限设定） |
+| 回放倍率 | FAST-LIO2 1.0×，LIO-SAM 0.7×，Point-LIO 0.35×（按各系统算力上限设定；GLIM 离线，不适用） |
 
-`/glim_ros/lidar_odom_corrected` 只以话题形式发布，离线 dump 里没有等价产物
-（`odom_lidar.txt` 是未校正的预测值），所以 odom 系必须在线录。
 降倍率仅影响 CPU 可用时间，输入数据不做任何删减，因此不影响精度指标。
 
 ---

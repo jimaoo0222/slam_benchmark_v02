@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLAM 内部一致性 Benchmark</title>
+<meta name="description" content="不依赖控制点坐标，用静止散布、重访一致性、闭合误差、段长偏差四项自洽约束评测 GLIM / FAST-LIO2 / LIO-SAM / Point-LIO">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./">SLAM 内部一致性 Benchmark</a>
+    <nav>
+      <a href="#results" class="active">结果</a>
+      <a href="#why">评测思路</a>
+      <a href="#metrics">指标</a>
+      <a href="#dataset">数据集</a>
+      <a href="#repro">复现</a>
+      <a href="#limits">限制</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<h1>SLAM 内部一致性 Benchmark</h1>
+<p class="subtitle">
+8 条自录序列 · 2 类固态激光雷达 · 4 个 LiDAR-惯性里程计系统 —— 不依赖控制点坐标，
+用轨迹自身必须满足的四项约束（静止、重访、闭合、段长）在毫米量级上区分优劣
+</p>
+
+<div class="stats">
+  <div><div class="v">5</div><div class="k">条轨迹（4 系统）</div></div>
+  <div><div class="v">8</div><div class="k">序列</div></div>
+  <div><div class="v">2</div><div class="k">传感器</div></div>
+  <div><div class="v">38</div><div class="k">次运行</div></div>
+  <div><div class="v">3.1 mm</div><div class="k">最佳静止散布</div></div>
+</div>
+
+<h2 id="results">结果</h2>
+
+<p>
+下表为各指标的<strong>序列中位数</strong>。绿色圆点标出该列最优；
+「有效序列」不足 8 表示该指标对其部分序列不适用
+（<code>03_02</code>、<code>04_02</code> 出发即在行走，无起点锚点，重访与闭合无定义）。
+</p>
+
+<table class="board">
+<thead><tr><th>系统</th>
+<th class="num">静止散布<br><span style="font-weight:400;font-size:12px">mm ↓</span></th>
+<th class="num">航向<br><span style="font-weight:400;font-size:12px">° ↓</span></th>
+<th class="num">重访<br><span style="font-weight:400;font-size:12px">mm ↓</span></th>
+<th class="num">闭合<br><span style="font-weight:400;font-size:12px">mm ↓</span></th>
+<th class="num">段长偏差<br><span style="font-weight:400;font-size:12px">% ↓</span></th>
+<th class="num">段最差<br><span style="font-weight:400;font-size:12px">% ↓</span></th>
+<th class="num">序列</th>
+</tr></thead><tbody>
+<tr><td class="alg">GLIM<small>map 系 · 全局优化后</small></td>
+<td class="num"><span class="best">3.1</span><div class="bar bestbar"><i style="width:29.6%"></i></div></td>
+<td class="num"><span class="best">0.21</span></td>
+<td class="num">18.6</td>
+<td class="num">11.3</td>
+<td class="num">0.05</td>
+<td class="num">3.21</td>
+<td class="num">8</td></tr>
+<tr><td class="alg">GLIM<small>odom 系 · 无全局跳变</small></td>
+<td class="num">3.3<div class="bar"><i style="width:31.9%"></i></div></td>
+<td class="num">0.27</td>
+<td class="num">32.2</td>
+<td class="num">35.6</td>
+<td class="num">0.06</td>
+<td class="num"><span class="best">3.12</span></td>
+<td class="num">6</td></tr>
+<tr><td class="alg">FAST-LIO2<small>点到面 ICP · 无回环</small></td>
+<td class="num">8.0<div class="bar"><i style="width:77.7%"></i></div></td>
+<td class="num">0.24</td>
+<td class="num">54.8</td>
+<td class="num">69.0</td>
+<td class="num">0.28</td>
+<td class="num">5.61</td>
+<td class="num">8</td></tr>
+<tr><td class="alg">LIO-SAM<small>因子图 · 有回环</small></td>
+<td class="num">7.2<div class="bar"><i style="width:69.3%"></i></div></td>
+<td class="num">0.28</td>
+<td class="num">33.7</td>
+<td class="num">27.0</td>
+<td class="num"><span class="best">0.00</span></td>
+<td class="num">4.53</td>
+<td class="num">8</td></tr>
+<tr><td class="alg">Point-LIO ※<small>逐点 IEKF · 无回环</small></td>
+<td class="num">10.3<div class="bar"><i style="width:100.0%"></i></div></td>
+<td class="num">0.31</td>
+<td class="num"><span class="best">6.1</span></td>
+<td class="num"><span class="best">7.1</span></td>
+<td class="num">0.06</td>
+<td class="num">5.95</td>
+<td class="num">7</td></tr>
+</tbody></table>
+
+<p style="font-size:13.5px;color:var(--fg-muted)">
+<strong>读法</strong>：四项指标互相独立——静止散布看短期噪声，重访/闭合看累积漂移，
+段长偏差看局部尺度形变。一个系统可以「抖动小但漂移大」，也可能相反，
+因此需要并排看而不是取平均。
+</p>
+
+<h3>关键发现</h3>
+
+<div class="takeaway">
+  <h4>1. GLIM 的短期一致性进入毫米量级</h4>
+  <p>静止散布 <strong>3.1 mm</strong>、航向
+  <strong>0.21°</strong>，两项均为四系统之首。
+  该量级已接近人站立时自然摆动（5~10 mm）所决定的下限，再小的差异不具备解释力。</p>
+</div>
+
+<div class="takeaway">
+  <h4>2. 短期噪声与长期漂移是两种独立特性</h4>
+  <p>GLIM 抖动最小（3.1 mm）但重访为
+  18.6 mm；Point-LIO 抖动最大
+  （10.3 mm）却几乎不漂（重访
+  6.1 mm、闭合 7.1 mm，
+  均为最优）。<strong>把两者混成一个平均分，会把不同失效模式抹平。</strong></p>
+</div>
+
+<div class="takeaway">
+  <h4>3. 闭合误差小不等于精度高</h4>
+  <p>在 <code>03_01</code> 上，Point-LIO 的闭合误差为 35.6 mm（优于 GLIM 的 53.1 mm），
+  但静止散布 23.1 mm、单段最差 5.95%。这说明它首尾接得上，
+  中途却发生了形变——<strong>「回到原点」和「一路都准」是两件事</strong>。</p>
+</div>
+
+<div class="takeaway">
+  <h4>4. 局部形状与长期漂移可分别最优</h4>
+  <p>LIO-SAM 的段长偏差中位为 0.00%，
+  是局部尺度保持最好的；但重访 33.7 mm 明显落后。
+  其失效模式与 Point-LIO 正好相反。</p>
+</div>
+
+<div class="takeaway">
+  <h4>5. 场地几何是主导因素</h4>
+  <p>同一套配置下，2.70 m 窄走廊（<code>03_01</code>）的静止散布为 10.5 mm，
+  6.30 m 开阔房间（<code>04_01</code>）为 2.8 mm，相差约四倍。
+  <strong>报告精度时必须带上场地条件</strong>，否则数字不可比。</p>
+</div>
+
+<h3>逐序列明细</h3>
+
+<details>
+<summary>静止散布 <small>— 停车窗口内水平位置 RMS 偏差，越小越好</small></summary>
+<table class="board">
+<thead><tr>
+<th class="tight">序列</th>
+<th class="tight">传感器</th>
+<th class="num">GLIM(odom)</th>
+<th class="num">GLIM(map)</th>
+<th class="num">FAST-LIO2</th>
+<th class="num">LIO-SAM</th>
+<th class="num">Point-LIO</th>
+</tr></thead><tbody>
+<tr>
+<td class="tight"><code>01_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">3.2</td>
+<td class="num">6.6</td>
+<td class="num">3.7</td>
+<td class="num">7.3</td>
+</tr>
+<tr>
+<td class="tight"><code>01_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">7.6</td>
+<td class="num">11.5</td>
+<td class="num">8.1</td>
+<td class="num">10.3</td>
+</tr>
+<tr>
+<td class="tight"><code>02_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">2.0</td>
+<td class="num">1.3</td>
+<td class="num">5.3</td>
+<td class="num">3.5</td>
+<td class="num">6.0</td>
+</tr>
+<tr>
+<td class="tight"><code>02_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">2.1</td>
+<td class="num">1.8</td>
+<td class="num">6.4</td>
+<td class="num">3.1</td>
+<td class="num">5.3</td>
+</tr>
+<tr>
+<td class="tight"><code>03_01</code></td>
+<td class="tight">C01</td>
+<td class="num">5.4</td>
+<td class="num">10.5</td>
+<td class="num">20.6</td>
+<td class="num">12.6</td>
+<td class="num">23.1</td>
+</tr>
+<tr>
+<td class="tight"><code>03_02</code></td>
+<td class="tight">C01</td>
+<td class="num">7.2</td>
+<td class="num">5.1</td>
+<td class="num">12.8</td>
+<td class="num">8.3</td>
+<td class="num"><span class="bad">发散</span></td>
+</tr>
+<tr>
+<td class="tight"><code>04_01</code></td>
+<td class="tight">C01</td>
+<td class="num">3.4</td>
+<td class="num">2.8</td>
+<td class="num">7.6</td>
+<td class="num">7.3</td>
+<td class="num">16.8</td>
+</tr>
+<tr>
+<td class="tight"><code>04_02</code></td>
+<td class="tight">C01</td>
+<td class="num">3.2</td>
+<td class="num">2.9</td>
+<td class="num">8.4</td>
+<td class="num">7.0</td>
+<td class="num">18.5</td>
+</tr>
+</tbody></table>
+</details>
+<details>
+<summary>重访一致性 <small>— 同一物理点两次访问的位置差，越小越好</small></summary>
+<table class="board">
+<thead><tr>
+<th class="tight">序列</th>
+<th class="tight">传感器</th>
+<th class="num">GLIM(odom)</th>
+<th class="num">GLIM(map)</th>
+<th class="num">FAST-LIO2</th>
+<th class="num">LIO-SAM</th>
+<th class="num">Point-LIO</th>
+</tr></thead><tbody>
+<tr>
+<td class="tight"><code>01_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">26.9</td>
+<td class="num">52.9</td>
+<td class="num">23.9</td>
+<td class="num">24.5</td>
+</tr>
+<tr>
+<td class="tight"><code>01_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">37.4</td>
+<td class="num">52.0</td>
+<td class="num">38.0</td>
+<td class="num">32.4</td>
+</tr>
+<tr>
+<td class="tight"><code>02_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">7.6</td>
+<td class="num">10.2</td>
+<td class="num">56.8</td>
+<td class="num">1406.9</td>
+<td class="num">4.6</td>
+</tr>
+<tr>
+<td class="tight"><code>02_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">2.3</td>
+<td class="num">5.5</td>
+<td class="num">57.4</td>
+<td class="num">23.5</td>
+<td class="num">4.4</td>
+</tr>
+<tr>
+<td class="tight"><code>03_01</code></td>
+<td class="tight">C01</td>
+<td class="num">94.2</td>
+<td class="num">42.1</td>
+<td class="num">74.1</td>
+<td class="num">39.5</td>
+<td class="num">6.3</td>
+</tr>
+<tr>
+<td class="tight"><code>03_02</code></td>
+<td class="tight">C01</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+</tr>
+<tr>
+<td class="tight"><code>04_01</code></td>
+<td class="tight">C01</td>
+<td class="num">56.9</td>
+<td class="num">8.3</td>
+<td class="num">52.6</td>
+<td class="num">29.5</td>
+<td class="num">6.0</td>
+</tr>
+<tr>
+<td class="tight"><code>04_02</code></td>
+<td class="tight">C01</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+</tr>
+</tbody></table>
+</details>
+<details>
+<summary>闭合误差 <small>— 统一时间区间内首尾各 1 s 的平均位置差，越小越好</small></summary>
+<table class="board">
+<thead><tr>
+<th class="tight">序列</th>
+<th class="tight">传感器</th>
+<th class="num">GLIM(odom)</th>
+<th class="num">GLIM(map)</th>
+<th class="num">FAST-LIO2</th>
+<th class="num">LIO-SAM</th>
+<th class="num">Point-LIO</th>
+</tr></thead><tbody>
+<tr>
+<td class="tight"><code>01_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">14.8</td>
+<td class="num">72.6</td>
+<td class="num">11.9</td>
+<td class="num">7.6</td>
+</tr>
+<tr>
+<td class="tight"><code>01_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">4.3</td>
+<td class="num">70.5</td>
+<td class="num">3.2</td>
+<td class="num">5.2</td>
+</tr>
+<tr>
+<td class="tight"><code>02_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">15.4</td>
+<td class="num">13.7</td>
+<td class="num">64.9</td>
+<td class="num">1396.9</td>
+<td class="num">2.0</td>
+</tr>
+<tr>
+<td class="tight"><code>02_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">7.2</td>
+<td class="num">8.9</td>
+<td class="num">67.4</td>
+<td class="num">22.1</td>
+<td class="num">6.5</td>
+</tr>
+<tr>
+<td class="tight"><code>03_01</code></td>
+<td class="tight">C01</td>
+<td class="num">86.8</td>
+<td class="num">53.1</td>
+<td class="num">84.7</td>
+<td class="num">31.8</td>
+<td class="num">35.6</td>
+</tr>
+<tr>
+<td class="tight"><code>03_02</code></td>
+<td class="tight">C01</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+</tr>
+<tr>
+<td class="tight"><code>04_01</code></td>
+<td class="tight">C01</td>
+<td class="num">55.7</td>
+<td class="num">8.1</td>
+<td class="num">46.0</td>
+<td class="num">36.8</td>
+<td class="num">22.2</td>
+</tr>
+<tr>
+<td class="tight"><code>04_02</code></td>
+<td class="tight">C01</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+<td class="num"><span class="na">—</span></td>
+</tr>
+</tbody></table>
+</details>
+<details>
+<summary>段长偏差 <small>— 相邻停车点间距相对图纸长度的偏差，越小越好</small></summary>
+<table class="board">
+<thead><tr>
+<th class="tight">序列</th>
+<th class="tight">传感器</th>
+<th class="num">GLIM(odom)</th>
+<th class="num">GLIM(map)</th>
+<th class="num">FAST-LIO2</th>
+<th class="num">LIO-SAM</th>
+<th class="num">Point-LIO</th>
+</tr></thead><tbody>
+<tr>
+<td class="tight"><code>01_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">−0.17</td>
+<td class="num">0.09</td>
+<td class="num">−0.15</td>
+<td class="num">0.03</td>
+</tr>
+<tr>
+<td class="tight"><code>01_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num"><span class="na">—</span></td>
+<td class="num">−0.34</td>
+<td class="num">0.00</td>
+<td class="num">−0.29</td>
+<td class="num">−0.17</td>
+</tr>
+<tr>
+<td class="tight"><code>02_1</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">0.02</td>
+<td class="num">0.01</td>
+<td class="num">0.34</td>
+<td class="num">−0.92</td>
+<td class="num">0.17</td>
+</tr>
+<tr>
+<td class="tight"><code>02_2</code></td>
+<td class="tight">MID-360s</td>
+<td class="num">0.09</td>
+<td class="num">0.10</td>
+<td class="num">0.22</td>
+<td class="num">0.37</td>
+<td class="num">0.06</td>
+</tr>
+<tr>
+<td class="tight"><code>03_01</code></td>
+<td class="tight">C01</td>
+<td class="num">−0.84</td>
+<td class="num">−0.86</td>
+<td class="num">−1.62</td>
+<td class="num">−0.88</td>
+<td class="num">−1.53</td>
+</tr>
+<tr>
+<td class="tight"><code>03_02</code></td>
+<td class="tight">C01</td>
+<td class="num">0.42</td>
+<td class="num">0.42</td>
+<td class="num">0.56</td>
+<td class="num">0.34</td>
+<td class="num"><span class="bad">发散</span></td>
+</tr>
+<tr>
+<td class="tight"><code>04_01</code></td>
+<td class="tight">C01</td>
+<td class="num">0.57</td>
+<td class="num">0.15</td>
+<td class="num">0.71</td>
+<td class="num">0.27</td>
+<td class="num">0.38</td>
+</tr>
+<tr>
+<td class="tight"><code>04_02</code></td>
+<td class="tight">C01</td>
+<td class="num">−0.10</td>
+<td class="num">0.17</td>
+<td class="num">0.35</td>
+<td class="num">0.15</td>
+<td class="num">0.21</td>
+</tr>
+</tbody></table>
+</details>
+
+<h2 id="why">评测思路</h2>
+
+<p>
+常规做法是用控制点真值算绝对轨迹误差（ATE）。在本数据集的室内近距离场景下，
+这条路的<strong>分辨能力</strong>受两件事限制：
+</p>
+
+<ul>
+  <li>控制点坐标由卷尺与地砖尺寸推算，单块砖 0.2 mm 的偏差在 25 块后累积成 5 cm，
+  真值本身的不确定度约 ±1~2 cm；</li>
+  <li>每条轨迹只抽取 6~7 个停车时刻（约 1900 帧的 0.4%），单点抖动直接主导统计量。</li>
+</ul>
+
+<p>
+于是当多个系统都进到 1 cm 以内时，基于真值的排名已经无法区分优劣——
+0.33 cm 与 0.35 cm 的差异落在真值不确定度之内。
+本基准改用<strong>不依赖控制点坐标</strong>的约束：人站住时位姿应恒定、
+同一地点二次访问应重合、闭环应首尾相接、相邻停车点间距应与图纸一致。
+这些约束只用到「长度」和「路线拓扑」，对真值精度的敏感度低一个数量级。
+</p>
+
+<div class="note">
+<p><strong>两套口径解决不同问题，应结合使用</strong></p>
+<p>基于真值的 ATE 回答「轨迹与真实世界差多少」，适合报告整体精度与跨场景比较；
+内部一致性回答「轨迹自身是否自洽、可复现」，适合区分系统质量、调参与回归验证。
+后者不替代前者，只补其力不能及的部分。</p>
+</div>
+
+<h2 id="metrics">四个指标</h2>
+
+<div class="metrics">
+
+<div class="metric">
+  <h4>静止散布 <span class="sym">std_xy</span></h4>
+  <p>停车窗口内所有帧相对均值的位置偏差均方根。反映短期噪声与静止期漂移，
+  含人体自然摆动，因此 <strong>5 mm 已接近测量下限</strong>。</p>
+  <p><code>sqrt(mean[(x−x̄)² + (y−ȳ)²])</code></p>
+</div>
+
+<div class="metric">
+  <h4>重访一致性 <span class="sym">revisit</span></h4>
+  <p>路线拓扑中同一停车点被访问两次时，两次估计位置之差。只依赖路线拓扑，
+  是最直接的累积漂移指标。</p>
+  <p><code>‖p̄ᵢ − p̄ⱼ‖,  order[i] = order[j]</code></p>
+</div>
+
+<div class="metric">
+  <h4>闭合误差 <span class="sym">closure_1s</span></h4>
+  <p>统一时间区间内首 1 s 与末 1 s 的平均位置之差。要求起点落在停车窗口内，
+  否则无定义（记 —）。取 1 s 平均而非单帧，以抑制抖动。</p>
+</div>
+
+<div class="metric">
+  <h4>段长偏差 <span class="sym">seg_bias</span></h4>
+  <p>相邻停车点间距相对图纸长度的平均偏差，<strong>只比长度、不比绝对位置</strong>。
+  衡量经刚体对齐后仍残留的局部尺度形变。</p>
+</div>
+
+</div>
+
+<div class="warn">
+<p><strong>停车窗口由 IMU 判定，与算法无关</strong></p>
+<p>停车时刻是数据的物理属性（人何时站住），因此用角速度模长、加速度模长与持续时间
+从 IMU 中切出候选窗口，再按段长序列与图纸比对、用组合搜索求最优配对。
+阈值不取固定值：8 条序列的静止质量不同，按由严到宽遍历，
+取「最严格且能通过拓扑校验」的一组。</p>
+</div>
+
+<h2 id="dataset">数据集</h2>
+
+<p>
+两套数据各自独立采集，<strong>不是同一时刻的 A/B 对比</strong>，只能比较量级。
+序列的停车位置全部由 IMU 自动判定，与所用算法无关。
+</p>
+
+<table class="board">
+<thead><tr>
+<th class="tight">序列</th>
+<th class="tight">传感器</th>
+<th>场地</th>
+<th>路线</th>
+<th class="num">路径长</th>
+<th class="num">时长</th>
+<th>闭环</th>
+</tr></thead><tbody>
+<tr>
+<td class="tight"><code>01_1</code></td>
+<td class="tight">MID-360s</td>
+<td>小场地（6.30 × 1.80 m）</td>
+<td>0-1-2-3-4-0</td>
+<td class="num">15.15 m</td>
+<td class="num">212 s</td>
+<td>是</td>
+</tr>
+<tr>
+<td class="tight"><code>01_2</code></td>
+<td class="tight">MID-360s</td>
+<td>同上</td>
+<td>0-1-2-3-4-0</td>
+<td class="num">15.15 m</td>
+<td class="num">251 s</td>
+<td>是</td>
+</tr>
+<tr>
+<td class="tight"><code>02_1</code></td>
+<td class="tight">MID-360s</td>
+<td>同上</td>
+<td>0-2-3-4-1-0</td>
+<td class="num">14.65 m</td>
+<td class="num">240 s</td>
+<td>是</td>
+</tr>
+<tr>
+<td class="tight"><code>02_2</code></td>
+<td class="tight">MID-360s</td>
+<td>同上</td>
+<td>0-2-3-4-1-0</td>
+<td class="num">14.65 m</td>
+<td class="num">225 s</td>
+<td>是</td>
+</tr>
+<tr>
+<td class="tight"><code>03_01</code></td>
+<td class="tight">C01</td>
+<td>窄走廊（2.70 × 11.38 m）</td>
+<td>0-1-2-3-4-5-0</td>
+<td class="num">28.16 m</td>
+<td class="num">194 s</td>
+<td>是</td>
+</tr>
+<tr>
+<td class="tight"><code>03_02</code></td>
+<td class="tight">C01</td>
+<td>同上</td>
+<td>0-5-4-3-2-1-0（反向）</td>
+<td class="num">25.46 m</td>
+<td class="num">235 s</td>
+<td>否</td>
+</tr>
+<tr>
+<td class="tight"><code>04_01</code></td>
+<td class="tight">C01</td>
+<td>小场地</td>
+<td>0-2-3-4-1-0</td>
+<td class="num">14.65 m</td>
+<td class="num">159 s</td>
+<td>是</td>
+</tr>
+<tr>
+<td class="tight"><code>04_02</code></td>
+<td class="tight">C01</td>
+<td>小场地</td>
+<td>0-1-2-3-4-0</td>
+<td class="num">13.35 m</td>
+<td class="num">137 s</td>
+<td>否</td>
+</tr>
+</tbody></table>
+
+<div class="note">
+<p><strong>覆盖情况</strong></p>
+<p>每条序列最多 5 条轨迹：GLIM 的 map 系与 odom 系两个输出，加上 FAST-LIO2、LIO-SAM、Point-LIO。
+<code>01_1</code>、<code>01_2</code> 的 GLIM odom 录制不完整（3675 帧却跨 1071 s），
+已剔除，故 GLIM (odom) 的有效序列为 6 条；Point-LIO 在 <code>03_02</code> 上发散，有效序列为 7 条。</p>
+</div>
+
+<h3>采集方式</h3>
+
+<p>
+八个包用的是同一套流程：<strong>推着小车沿地面贴好的标记点走，到点停住 3~5 秒，
+再走向下一个点</strong>。小车是碳纤维板加四个万向轮，上面放笔记本（跑驱动 + 录包）、
+12 V 锂电池和雷达，比手持稳。
+</p>
+
+<div class="figs">
+  <figure>
+    <img src="assets/img/car_lidar.jpg" alt="采集平台：小车、笔记本、电池与雷达">
+    <figcaption>采集平台：笔记本跑驱动并录包，12 V 锂电池供电，右侧立柱为雷达</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/img/car_lidar2.jpg" alt="雷达安装细节与地面停车点标记">
+    <figcaption>雷达固定在板边缘，正下方地面就是停车点标记（黑色 X 胶带）</figcaption>
+  </figure>
+</div>
+
+<p>
+<strong>为什么每个点必须站住 3~5 秒：</strong>真值只有「停车点坐标」，没有逐帧真值。
+站住之后，评测脚本才能靠「速度 &lt; 0.08 m/s 且持续 &gt; 2 s」把这段识别成静止段，
+再与卷尺量出的坐标一一对应。本基准的停车窗口完全由 IMU 判定，正是为了不依赖任何算法的输出。
+</p>
+
+<h3>录包</h3>
+
+<pre><code>bash scripts/26_record_bag.sh &lt;包名&gt;</code></pre>
+
+<p>
+脚本会先自检话题是否在线（驱动没起来就不会录出一个空包），
+录完自动打印时长、体积、消息数与<strong>实测频率</strong>，频率偏离就标警告。
+话题名对这一批设备是固定的：
+</p>
+
+<table>
+<thead><tr><th>话题</th><th>类型</th><th class="num">期望频率</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td class="tight"><code>/livox/lidar</code></td><td class="tight">sensor_msgs/msg/PointCloud2</td>
+    <td class="num">~10 Hz</td><td>每点自带 float64 纳秒时间戳</td></tr>
+<tr><td class="tight"><code>/livox/imu</code></td><td class="tight">sensor_msgs/msg/Imu</td>
+    <td class="num">~200 Hz</td><td>与点云同源，供惯性预积分</td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<p><strong>两个容易踩的坑</strong></p>
+<p>点云统一录成 <code>sensor_msgs/PointCloud2</code>（不是 <code>CustomMsg</code>），
+否则多数算法读不了；并行跑多个算法时必须给每一路不同的 <code>ROS_DOMAIN_ID</code>，
+否则共用的 <code>/livox/lidar</code> 会串数据。录完还要核对轨迹时长是否覆盖整个包 ——
+覆盖不足说明算法被算力挤掉了。</p>
+</div>
+
+<h3>场地</h3>
+
+<div class="figs">
+  <figure>
+    <img src="assets/img/site_layout.png" alt="老场地布局：1.80 × 6.30 m">
+    <figcaption>老场地 1.80 × 6.30 m，停车点 P0–P4，两条闭环路线</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/img/clean_path_plot.png" alt="新场地布局：2.70 × 11.38 m">
+    <figcaption>新场地 2.70 × 11.38 m，停车点 P0–P5，正向与反向两条路线</figcaption>
+  </figure>
+</div>
+
+<p style="font-size:13.5px;color:var(--fg-muted)">
+真值由卷尺量相邻标记点距离后逐段累加得到，每段估计误差约 ±1 cm。
+这个量级已经与算法误差同量级，也正是本基准改用内部一致性约束的原因（见
+<a href="#why">评测思路</a>）。现场实拍：
+<a href="assets/img/site.jpg">地面 X 标记</a>、
+<a href="assets/img/site2.jpg">沿走廊的标记点</a>。
+</p>
+
+<h2 id="repro">复现</h2>
+
+<p>评测完全由脚本产出，页面上的数字不手写：</p>
+
+<pre><code>cd new_benchmark
+source /opt/ros/humble/setup.bash
+/usr/bin/python3 scripts/build.py          # IMU 窗口 → 评测 → 表格 → 本站
+</code></pre>
+
+<p>分步执行：</p>
+
+<pre><code>/usr/bin/python3 scripts/build.py --windows   # 仅重建停车窗口（需读 bag，约 1 分钟）
+/usr/bin/python3 scripts/build.py --eval      # 仅重跑评测（复用已有窗口，秒级）
+/usr/bin/python3 scripts/make_site.py         # 仅重新生成本页
+</code></pre>
+
+<p>新增一条序列：把轨迹放进 <code>traj/{序列名}_{系统名}/traj.txt</code>
+（TUM 八列），在 <code>config/manifest.json</code> 登记，然后重跑上面三条命令。</p>
+
+<h2 id="limits">适用范围与限制</h2>
+
+<ol>
+  <li><strong>静止散布的下限由人体晃动决定。</strong>站立时的自然摆动约 5~10 mm，
+  本指标无法分辨优于 5 mm 的差异。GLIM 的 3.1 mm 已达到该下限。</li>
+
+  <li><strong>段长偏差仍需图纸尺寸。</strong>其参考值来自卷尺与地砖推算，精度约 ±1 cm/段。</li>
+
+  <li><strong>Point-LIO 在 <code>03_02</code> 上未收敛。</strong>四次尝试（两种回放倍率、
+  两个独立 ROS 域）均发散至 404~433 cm，轨迹跨度达 9 km，已从统计中剔除，
+  其有效序列为 7 条。</li>
+
+  <li><strong>LIO-SAM 在 <code>02_1</code> 上出现一次全局修正跳变。</strong>
+  t ≈ 172 s 出现 1.40 m 的单帧位姿跳变，随后末段位置超出场地范围，
+  导致闭合 1396.9 mm、重访 1406.9 mm，而其余序列为 6~38 mm。推断为回环约束误匹配。</li>
+
+  <li><strong>两类传感器的 GLIM 配置不同。</strong>跨传感器的结果反映的是
+  「传感器 + 配置 + 场地」的组合差异，不能单独归因于传感器或参数；
+  同一传感器内部的横向比较不受影响。</li>
+
+  <li><strong>C01 的 GLIM 输出存在冷启动段。</strong>该构建采用 ROBUST 初始化，
+  前 3 s 位姿来自临时估计，之后仍需 30~40 s 预热才收敛，
+  轨迹起点比其它系统晚约 2 s，首个停车窗口样本偏少。</li>
+
+  <li><strong>绝对精度仍需独立真值。</strong>若要报告毫米级 ATE，
+  须以全站仪或激光跟踪仪重新标定控制点，卷尺与地砖推算无法满足。</li>
+</ol>
+
+<footer class="bottom">
+  <p>
+    数据采集 2026 年 10—11 月 · 评测脚本版本 2026-11-08 ·
+    本页由 <code>scripts/make_site.py</code> 从 <code>eval/</code> 与 <code>tables/</code> 自动生成
+  </p>
+  <p>
+    参考：GLIM (Koide et al., 2024) · FAST-LIO2 (Xu et al., T-RO 2022) ·
+    LIO-SAM (Shan et al., IROS 2020) · Point-LIO (He et al., 2023)
+  </p>
+</footer>
+
+</div>
+</body>
+</html>
