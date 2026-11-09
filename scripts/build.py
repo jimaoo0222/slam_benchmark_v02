@@ -240,6 +240,83 @@ def run_eval():
     return rows
 
 
+
+# 小场地（6.30 × 1.80 m）两条路线在两颗雷达上都跑过，可做同场地配对比较。
+SMALL_SITE_ROUTE = {'01_1': 'A', '01_2': 'A', '02_1': 'B', '02_2': 'B',
+                    '04_01': 'B', '04_02': 'A'}
+ROUTE_DESC = {'A': '0-1-2-3-4-0', 'B': '0-2-3-4-1-0'}
+
+
+def sensor_summary(rows):
+    """按传感器分组的中位数 + 同场地同路线配对，输出 tables/传感器对比.md。
+
+    两级比较的原因：C01 的两条序列在 25~28 m 窄走廊，MID-360s 全在 13~15 m
+    小场地。直接比中位数等于把「传感器」和「路线长度」混在一起，
+    所以再补一张只用同一个小场地的配对表。
+    """
+    ALGOS = ['GLIM(map)', 'GLIM(odom)', 'FAST-LIO2', 'LIO-SAM', 'Point-LIO']
+    good = [r for r in rows if r['std_xy_mm'] < 500.0]     # 剔除发散
+
+    def med(rs, key):
+        vs = [r[key] for r in rs if r.get(key) is not None]
+        return float(np.median(vs)) if vs else None
+
+    radar_of = {r['bag']: r['radar'] for r in good}
+    lines = ['# C01 与 MID-360s 对比', '',
+             '两组数据的场地构成不同，直接比中位数会把「传感器」和「路线长度」',
+             '混在一起，所以分成两级看。', '',
+             '## 1. 按传感器分组（各自全部有效序列的中位数）', '',
+             '| 系统 | 传感器 | 序列数 | 静止散布 | 航向 | 重访 | 闭合 | 段长偏差 |',
+             '|---|---|---|---|---|---|---|---|']
+    for a in ALGOS:
+        for radar in ('MID-360s', 'C01'):
+            rs = [r for r in good if r['algo'] == a and r['radar'] == radar]
+            if not rs:
+                continue
+            lines.append(
+                f'| {a} | {radar} | {len(rs)} | {num(med(rs, "std_xy_mm"))} mm | '
+                f'{num(med(rs, "yaw_deg"), 2)}° | {num(med(rs, "revisit_mm"))} mm | '
+                f'{num(med(rs, "closure_mm"))} mm | {num(med(rs, "seg_bias_pct"), 2)}% |')
+
+    lines += ['', '## 2. 同场地同路线配对（只用小场地 6.30 × 1.80 m）', '',
+              '两颗雷达在同一块场地、同一条路线上的结果。C01 每路线只有 1 条序列，',
+              'MID-360s 有 2 条，样本少，只能看趋势。', '',
+              '| 路线 | 系统 | MID-360s 静止散布 | C01 静止散布 | MID-360s 段长偏 | C01 段长偏 |',
+              '|---|---|---|---|---|---|']
+    for route in ('A', 'B'):
+        for a in ALGOS:
+            cell = {'MID-360s': None, 'C01': None}
+            for radar in cell:
+                cell[radar] = [r for r in good
+                               if r['algo'] == a and r['radar'] == radar
+                               and SMALL_SITE_ROUTE.get(r['bag']) == route]
+            if not cell['MID-360s'] and not cell['C01']:
+                continue
+            lines.append(
+                f'| {ROUTE_DESC[route]} | {a} | {num(med(cell["MID-360s"], "std_xy_mm"))} | '
+                f'{num(med(cell["C01"], "std_xy_mm"))} | '
+                f'{num(med(cell["MID-360s"], "seg_bias_pct"), 2)} | '
+                f'{num(med(cell["C01"], "seg_bias_pct"), 2)} |')
+    lines += ['', '## 3. 同一序列内各系统的一致性', '',
+              '若各系统在同一条序列上给出几乎相同的航向散布，说明该量反映的是',
+              '录制时的实际晃动，而非算法或传感器差异。', '',
+              '| 序列 | 传感器 | 系统数 | 航向中位 | 航向极差 | 静止散布中位 | 静止散布极差 |',
+              '|---|---|---|---|---|---|---|']
+    by_bag: dict = {}
+    for r in good:
+        by_bag.setdefault(r['bag'], []).append(r)
+    for bag, rs in by_bag.items():
+        y = [r['yaw_deg'] for r in rs]
+        d = [r['std_xy_mm'] for r in rs]
+        lines.append(
+            f'| `{bag}` | {rs[0]["radar"]} | {len(rs)} | {num(np.median(y), 2)}° | '
+            f'{num(max(y) - min(y), 2)}° | {num(np.median(d))} mm | '
+            f'{num(max(d) - min(d))} mm |')
+
+    (HERE / 'tables/传感器对比.md').write_text('\n'.join(lines) + '\n')
+    print('已输出 tables/传感器对比.md')
+    return lines
+
 def write_per_bag_tables(rows):
     """输出四张逐序列指标表。"""
     ALGOS = ['GLIM(odom)', 'GLIM(map)', 'FAST-LIO2', 'LIO-SAM', 'Point-LIO']
@@ -309,6 +386,7 @@ def summarize(rows):
         if v['diverged']:
             print(f"※ {a} 在 {v['diverged']} 上发散，已剔除")
     write_per_bag_tables(rows)
+    sensor_summary(rows)
     return summ
 
 
