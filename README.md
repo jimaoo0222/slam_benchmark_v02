@@ -4,7 +4,7 @@
 不同，本基准不依赖控制点坐标，而检验轨迹自身必须满足的四个约束，
 从而在毫米量级上区分不同系统与配置。
 
-- **在线站点**：<https://github.com/SCUT-RobotIC/slam_benchmark>
+- **在线站点**：<https://jimaoo0222.github.io/slam_benchmark_v02/>
 - **数据集**：8 条自采 bag，2 类固态激光雷达，2 个室内场地
 - **系统**：GLIM（两种轨迹输出）、FAST-LIO2、LIO-SAM、Point-LIO
 - **指标**：静止散布、重访一致性、闭合误差、段长偏差
