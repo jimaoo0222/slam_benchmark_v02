@@ -1,3 +1,44 @@
+# Unfinished website: keep locally, exclude from future commits.
+/site/
+/scripts/make_site.py
+/docs/*.html
+/docs/*.json
+/docs/assets/*.css
+# docs/assets/img/ contains images used by Markdown; keep it tracked.
+
+# Local raw data and exported artifacts (keep traj/, eval/, tables/, config/).
+/data/
+/rosbag/
+/slam_benchmark/
+/output/
+/tmp/
+*.db3
+*.db3-shm
+*.db3-wal
+*.mcap
+*.bag
+*.log
+
+# Python, virtual environments and build caches.
 __pycache__/
-*.pyc
-scripts/make_site.py
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+/build/
+/install/
+/log/
+
+# Local editor, system and environment files.
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.env
+.env.*
+!.env.example
