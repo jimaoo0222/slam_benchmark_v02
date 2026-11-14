@@ -1,9 +1,6 @@
-# Unfinished website: keep locally, exclude from future commits.
+# Local preview only; GitHub Pages is published from tracked docs/ files.
 /site/
 /scripts/make_site.py
-/docs/*.html
-/docs/*.json
-/docs/assets/*.css
 # docs/assets/img/ contains images used by Markdown; keep it tracked.
 
 # Local raw data and exported artifacts (keep traj/, eval/, tables/, config/).

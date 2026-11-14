@@ -1,0 +1,456 @@
+{
+  "description": "Documentation provenance audit; source metadata and trajectory hashes only. No metrics changed.",
+  "timezone": "Asia/Shanghai",
+  "bags": {
+    "01_1": {
+      "metadata_path": "slam_benchmark/rosbag/01_1/metadata.yaml",
+      "metadata_sha256": "7b8acc11cf436c91ff4ad86a91d616aea01f7955b133b7481ec54cea5d223255",
+      "started_local": "2026-10-21T17:44:57.858433+08:00",
+      "duration_s": 212.085898983,
+      "topics": [
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 42416
+        },
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 2121
+        }
+      ]
+    },
+    "01_2": {
+      "metadata_path": "slam_benchmark/rosbag/01_2/metadata.yaml",
+      "metadata_sha256": "87cc674cca70c4d343a6df6316a3c6b728645daf0a5fb4be282ad7b0965e8829",
+      "started_local": "2026-10-21T18:00:10.527880+08:00",
+      "duration_s": 251.356821507,
+      "topics": [
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 50273
+        },
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 2513
+        }
+      ]
+    },
+    "02_1": {
+      "metadata_path": "slam_benchmark/rosbag/02_1/metadata.yaml",
+      "metadata_sha256": "fe1ac6423209b22a7b90fdc0b550ba48fe11204c4bea5e5a8dfaf862da8738c4",
+      "started_local": "2026-10-21T17:49:11.380903+08:00",
+      "duration_s": 240.279096632,
+      "topics": [
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 48046
+        },
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 2403
+        }
+      ]
+    },
+    "02_2": {
+      "metadata_path": "slam_benchmark/rosbag/02_2/metadata.yaml",
+      "metadata_sha256": "af3fd3b01491e80b00a16103a372fa0c1b7d1f22547a97704ee121ac20bf5c95",
+      "started_local": "2026-10-21T18:04:27.234417+08:00",
+      "duration_s": 224.502811255,
+      "topics": [
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 44902
+        },
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 2245
+        }
+      ]
+    },
+    "03_01": {
+      "metadata_path": "slam_benchmark/rosbag/03_01/metadata.yaml",
+      "metadata_sha256": "bc6436e79085a2b2fc8166dbea502508fc5eed3e29a9bd6e4bb31322bd6087dd",
+      "started_local": "2026-11-02T19:13:37.061503+08:00",
+      "duration_s": 193.864754716,
+      "topics": [
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 38715
+        },
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 1938
+        }
+      ]
+    },
+    "03_02": {
+      "metadata_path": "slam_benchmark/rosbag/03_02/metadata.yaml",
+      "metadata_sha256": "1f0db81c5cef74c61fe835962c1fed81d22d1ea749f839c34948aaf67a3d620d",
+      "started_local": "2026-11-02T19:18:41.208178+08:00",
+      "duration_s": 234.678432979,
+      "topics": [
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 46865
+        },
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 2347
+        }
+      ]
+    },
+    "04_01": {
+      "metadata_path": "slam_benchmark/rosbag/04_01/metadata.yaml",
+      "metadata_sha256": "ac71e902077368ab99632944830bf02bedfdd0feeed2f76a3dee2dc024e3bd1f",
+      "started_local": "2026-11-02T19:28:41.613169+08:00",
+      "duration_s": 158.607336057,
+      "topics": [
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 1586
+        },
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 31678
+        }
+      ]
+    },
+    "04_02": {
+      "metadata_path": "slam_benchmark/rosbag/04_02/metadata.yaml",
+      "metadata_sha256": "4320e74e74b937660ce17dfc8afaedacf3281b0743033e3eae5db202026fb35b",
+      "started_local": "2026-11-02T19:31:40.264591+08:00",
+      "duration_s": 136.501818822,
+      "topics": [
+        {
+          "name": "/livox/imu",
+          "type": "sensor_msgs/msg/Imu",
+          "messages": 27261
+        },
+        {
+          "name": "/livox/lidar",
+          "type": "sensor_msgs/msg/PointCloud2",
+          "messages": 1365
+        }
+      ]
+    }
+  },
+  "trajectories": [
+    {
+      "path": "traj/01_1_fastlio/traj.txt",
+      "sha256": "45fdeb3e7cba3022249346cb091aeb29223b445cc41e49a5be79293a7a156188",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/01_1_fastlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/01_1_glim/traj.txt",
+      "sha256": "0e9550d21cb2b40ea46711ce35cfc07910712695c3fddbbceaf95d3bea6aa9a5",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/01_1_glim/traj_glim_map.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/01_1_liosam/traj.txt",
+      "sha256": "b497359b8dfff1e849aef910230df70462af3378e70d95b9e111d875b58f860b",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/01_1_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/01_1_pointlio/traj.txt",
+      "sha256": "21d4152b30386886c3137f24588298f7d55bed9d7030104941f149deb40aaa8a",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/01_1_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/01_2_fastlio/traj.txt",
+      "sha256": "1525f03b8e372def196bd46e1c5be48b9dc3f2163cb38ffe9f8dbe6d7e927f41",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/01_2_fastlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/01_2_glim/traj.txt",
+      "sha256": "93ad5a11d134e909bfeaef5841d9be7ea3183e271c7febc1baceae718cf92e8c",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-06_GLIMv2/01_2_glim/traj_glim.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/01_2_liosam/traj.txt",
+      "sha256": "c0dc7a4ded925e2385d14504e6c43beb6fe144cf68d4d07a4c7fc83c258830ed",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/01_2_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/01_2_pointlio/traj.txt",
+      "sha256": "45b5104e11caafbf2c5da020cc801e0c1a074827ac55e044cdd2e287af122ace",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/01_2_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_1_fastlio/traj.txt",
+      "sha256": "94d4c7e9e72d346a93ea8bc645e09bb02cd0c3faa2807d8b5281d01fea7d8d9b",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_1_fastlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_1_glim/traj.txt",
+      "sha256": "ec8a40db27d6fdeb2c48eb62cf6618bc9cd68fe8bc9d2c7d024f2593866923c5",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_1_glim/traj_glim_map.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_1_glim/traj_odom.txt",
+      "sha256": "32449d4f07da34babe1d4feae6e79fbb2c3c286103442c1e9a563929678e24e5",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_1_glim/traj_odom_corrected.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_1_liosam/traj.txt",
+      "sha256": "b5b50f34f7ce4f73a7dd9bfcc915adef37e9d733bb3c9242ccb8caf2e45a3f05",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_1_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_1_pointlio/traj.txt",
+      "sha256": "8730d3fe94d6b4ce4a62c59871cae96c3553ede13a99add702df8d2689a1c39a",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_1_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_2_fastlio/traj.txt",
+      "sha256": "dfe4771b4f41e0300d8a6cb8f43c75b13d5856b92e7bffde9bc1321a54362ddc",
+      "archive_matches": [],
+      "match_status": "no_identical_archive_found"
+    },
+    {
+      "path": "traj/02_2_glim/traj.txt",
+      "sha256": "bc1e1d91d0290655a6eb2db5aa28a683516c5b65e8562fd754cae82cf0937ef2",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_2_glim/traj_glim_map.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_2_glim/traj_odom.txt",
+      "sha256": "171616dc7142286046ca22130e9433135e0b7fae435e7dc4c0f032c5d0ccc1f6",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_2_glim/traj_odom_corrected.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_2_liosam/traj.txt",
+      "sha256": "d0428fe7df5b35bd3cef2ed945f931a6d6ca2b0bd2d2be09ef14f8b7c2459fd1",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_2_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/02_2_pointlio/traj.txt",
+      "sha256": "d454bebcf0e231772f50a0df75b433ed0e72c83414edbca62e5de8de7d1ada80",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-08_内部一致性评测/traj/02_2_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_01_fastlio/traj.txt",
+      "sha256": "7cfc5babf35aaf60e1d86a56d9d27a3a546c5fe522dfca6f66242f7ac7f840fd",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/03_01_fastlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_01_glim/traj.txt",
+      "sha256": "858f1ccdbeb667845c2f0bbead2a8285d34b3c1f013e59fd0c7a5a5e702212c0",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/03_01_glim/traj_glim.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_01_glim/traj_odom.txt",
+      "sha256": "ea6dd1be3c0d437b1c3cc452ac2ef8f82dff77d24e5437b08cb79f7673a87005",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/03_01_glimodom/traj_odom_corrected.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_01_liosam/traj.txt",
+      "sha256": "c5f5e99188e90938af68239b18b4189a4f8002a9b2e2fe62613286b1c24001fa",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/03_01_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_01_pointlio/traj.txt",
+      "sha256": "4cc6f21886c75ce26e6f7728ef9053e03ab41e8d0ddcfc1cb70a71a716c3da36",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/03_01_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_02_fastlio/traj.txt",
+      "sha256": "537d838cc2b98a6078300e463ba6ca7bfd523302f67fd03fca99e2b682207bfe",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/03_02_fastlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_02_glim/traj.txt",
+      "sha256": "b9795330dbef58732d427447b3e4bf6c751c9462a967824fbabc78d3e12d8044",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/03_02_glim/traj_glim.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_02_glim/traj_odom.txt",
+      "sha256": "40dd55f4709f01432cd8f1ad99bf0b6bb44bb773aa2c69fda05eeaf7b4259703",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/03_02_glimodom/traj_odom_corrected.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_02_liosam/traj.txt",
+      "sha256": "a1e5dc87bdf79e9d1d68c6e583aff577f8194660912e5cc9047465f5bba3d7c7",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/03_02_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/03_02_pointlio/traj.txt",
+      "sha256": "2bfb282f91abfdf11a75a95913112a93a0255fdf120c3643c064cf470d3f813f",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/03_02_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_01_fastlio/traj.txt",
+      "sha256": "5ec917a21f29678ae77d5502da0eb2cd3b5f1af347eabe7484dde616845e37fc",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/04_01_fastlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_01_glim/traj.txt",
+      "sha256": "dc43d00bb6f45bcd0e19f549c416b480ba4b889a7adb50dd4512e798dbbb5e95",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/04_01_glim/traj_glim.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_01_glim/traj_odom.txt",
+      "sha256": "4fdded1c28d57169025619e190509e562ddac944cc6f7e60eff4c2a43c39d4d6",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/04_01_glimodom/traj_odom_corrected.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_01_liosam/traj.txt",
+      "sha256": "e1c7002d77022991ca3714e956f4b75b27a852b584e8c1cefe900f493854b53a",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/04_01_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_01_pointlio/traj.txt",
+      "sha256": "0e1008858d69396c1cffa11a105e15d4592932c1871c5c6c0d3f3b5b40e0481c",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/04_01_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_02_fastlio/traj.txt",
+      "sha256": "ef22055b42efa3e7b4f1087c361ee6d878dc5087263070b9232cf77b7c38f4f5",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/04_02_fastlio/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_02_glim/traj.txt",
+      "sha256": "ab6df721472a60113f8b9ae85f3d4006acf6a0ac9519d9de639ac90e6730fd45",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/04_02_glim/traj_glim.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_02_glim/traj_odom.txt",
+      "sha256": "e112d9f95509144afbbdb2f24a812343948d510debf32a6960cf29810fccd1dd",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-09_SENIOR_V2_C01/04_02_glimodom/traj_odom_corrected.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_02_liosam/traj.txt",
+      "sha256": "3ea88804a0c393ada517ad1c0d738f7298b6b13e8dd630ba943810ccd35976cb",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/04_02_liosam/traj.txt"
+      ],
+      "match_status": "matched"
+    },
+    {
+      "path": "traj/04_02_pointlio/traj.txt",
+      "sha256": "610a5983523b86228a15a726fff035393fa56ec21c6fbeef45c44879f9f8379b",
+      "archive_matches": [
+        "slam_benchmark/results/2026-11-07_IMUWIN_C01_d42/04_02_pointlio/traj.txt"
+      ],
+      "match_status": "matched"
+    }
+  ],
+  "matched_trajectory_count": 37,
+  "unmatched_trajectory_count": 1
+}

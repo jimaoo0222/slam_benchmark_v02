@@ -18,7 +18,7 @@
 | [算法数据对比](docs/数据对比.md) | 汇总、逐序列结果、有效样本数、异常和阈值敏感性 |
 | [两个雷达对比](docs/雷达对比.md) | 分组结果、同场地路线比较，以及配置与场景的影响 |
 
-网站尚未完成，本次以 README 与 `docs/*.md` 为阅读入口。`site/` 和生成的 HTML/CSS/网页 JSON 仅保留在本地，不纳入后续提交；Markdown 使用的 `docs/assets/img/` 照片与布局图继续保留。
+网站仍在完善，项目说明可阅读 README 与 `docs/*.md`，也可访问 <https://jimaoo0222.github.io/slam_benchmark_v02/>。GitHub Pages 的发布入口为 `docs/index.html`，网页、样式、图片和页面数据应随仓库提交；`site/` 仅作为本地预览副本忽略。
 
 ## 1. 为什么做这个项目
 
@@ -192,7 +192,7 @@ source /opt/ros/humble/setup.bash
 
 第一步只重新评测已有轨迹，第二步只更新 Markdown 对比说明。需要系统 Python 的 NumPy、ROS 2 Humble 的 `rclpy` / `sensor_msgs`。`--bag-root` 指向包含 `01_1/`、`01_2/` 等八个序列子目录的外部数据目录；不传时默认读取仓库内的 `data/rosbag/`。这些原始数据不会随仓库提交。
 
-直接阅读已有结果不需要原始 bag 或旧工作区。本仓库当前包含评测入口，不包含四算法完整运行环境；历史接入方式见[数据集说明](docs/数据集说明.md)。若要在本地继续制作网页，可使用 `scripts/update_explanations.py`（需要 `pandoc`），生成物由 `.gitignore` 排除。
+直接阅读已有结果不需要原始 bag 或旧工作区。本仓库当前包含评测入口，不包含四算法完整运行环境；历史接入方式见[数据集说明](docs/数据集说明.md)。更新网站时使用 `scripts/update_explanations.py`（需要 `pandoc`），并提交 `docs/` 中的网页、样式及页面数据；GitHub Pages 使用 `main` 分支的 `/docs` 目录。
 
 ```text
 benchmark/                         GitHub 仓库根目录（本地目前名为 new_benchmark）
@@ -206,5 +206,6 @@ benchmark/                         GitHub 仓库根目录（本地目前名为 n
 ├── eval/、tables/                  保留供复核的历史评测
 ├── scripts/                        当前与历史评测入口
 ├── data/rosbag/                    可选原始数据目录，不提交
-└── site/、docs/*.html               未完成的本地网站，不提交
+├── docs/*.html、docs/assets/       GitHub Pages 发布内容，需提交
+└── site/                           本地预览副本，不提交
 ```

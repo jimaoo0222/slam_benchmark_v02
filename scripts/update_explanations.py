@@ -120,6 +120,8 @@ def render_html():
             target = mapping.get(decoded, decoded)
             if target.startswith('site/assets/'):
                 target = target.removeprefix('site/')
+            elif target.startswith('docs/assets/'):
+                target = target.removeprefix('docs/')
             return attr+'="'+html.escape(target, quote=True)+'"'
         body=re.sub(r'(href|src)="([^"]+)"', rewrite_attribute, body)
         title=path.read_text().splitlines()[0].lstrip('# ')
